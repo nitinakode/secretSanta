@@ -1,0 +1,21 @@
+spring:
+  datasource:
+    properties:
+      requireSecureTransport: ON
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/nitin?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=false
+    username: root
+    password: ROOT
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+      ddl-auto: update
+  application:
+    name: admin-service
+server:
+  port: 8190
+
+redis:
+  host: localhost
+  password: yourpassword
+  port: 6380
