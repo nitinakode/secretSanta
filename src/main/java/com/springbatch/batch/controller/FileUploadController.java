@@ -125,16 +125,18 @@ public class FileUploadController {
 
 
 
-    @GetMapping("/getAll")
+    @GetMapping("/secret-santa")
     public ResponseEntity<?> getCache() {
         logger.info("Fetching secret santa cache");
         return new ResponseEntity(redisService.getValue("secret-santa"), HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete/{id}")
+
+    @DeleteMapping("/secret-santa/{id}")
     public ResponseEntity<?> deleteCache(@PathVariable("id") String id) {
         logger.info("Deleting secret santa cache for id: {}", id);
         redisService.deleteCache("secret-santa", id);
         return new ResponseEntity(redisService.getValue("secret-santa"), HttpStatus.OK);
     }
+
 }
