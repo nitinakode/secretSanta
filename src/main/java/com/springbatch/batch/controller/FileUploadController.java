@@ -31,7 +31,8 @@ public class FileUploadController {
     @Autowired
     private BatchService batchService;
 
-    private static final String BASE_UPLOAD_DIR = "C:/Users/NitinAkode/Downloads/batch-folder";
+    //consider Your directory
+    private static final String BASE_UPLOAD_DIR = "C:/Users/YOURDirectory/Downloads/batch-folder";
 
     @PostMapping("/employee")
     public ResponseEntity<String> uploadEmployeeFile(@RequestParam("file") MultipartFile file) {
@@ -73,12 +74,21 @@ public class FileUploadController {
             batchService.setYear(year);
             batchService.setFilePath(filePath.toString());
 
+            logger.info("{} Batch Job started",fileType);
+           if( batchService.runBatchJob(fileType.equals("secretSanta")))
+           {
+               return ResponseEntity.status(HttpStatus.OK).body(fileType + " job execution completed");
+           }
+           else
+           {
+               return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(fileType + " job execution Failed");
 
-            batchService.runBatchJob(fileType.equals("secretSanta"));
+           }
 
 
 
-            return ResponseEntity.status(HttpStatus.OK).body(fileType + " file uploaded and job started");
+
+
 
         } catch (IOException e) {
             logger.error("Failed to save file: {}", e.getMessage());

@@ -1,10 +1,8 @@
 package com.springbatch.batch.service;
 
-import org.springframework.batch.core.JobParameters;
-import org.springframework.batch.core.JobParametersBuilder;
+import org.springframework.batch.core.*;
 import org.springframework.batch.core.launch.JobLauncher;
-import org.springframework.batch.core.Job;
-import org.springframework.batch.core.JobExecution;
+import org.springframework.batch.item.file.FlatFileParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
@@ -51,7 +49,7 @@ public class BatchService {
         this.fileName = fileName;
     }
 
-    public void runBatchJob(boolean isSecretSanta) throws Exception {
+    public boolean runBatchJob(boolean isSecretSanta) throws Exception {
         logger.info("Running batch job with file path: {}", filePath);
         JobParameters jobParameters = new JobParametersBuilder()
                 .addString("filePath", filePath)
@@ -60,13 +58,19 @@ public class BatchService {
                 .toJobParameters();
 
         Job jobToRun = isSecretSanta ? secretSantaJob : employeeJob;
-        JobExecution jobExecution = jobLauncher.run(jobToRun, jobParameters);
 
-        if (jobExecution.getStatus().isUnsuccessful()) {
-            logger.error("Job failed with status: {}", jobExecution.getStatus());
-            throw new Exception("Job failed with status: " + jobExecution.getStatus());
-        } else {
-            logger.info("Job completed successfully with status: {}", jobExecution.getStatus());
+        try {
+            JobExecution jobExecution = jobLauncher.run(jobToRun, jobParameters);
+            return jobExecution.getStatus() == BatchStatus.COMPLETED;
+        } catch (FlatFileParseException e) {
+
+            logger.error("Error parsing file: " + e.getMessage());
+            return false;
+        } catch (Exception e) {
+
+            logger.error("Job failed due to an unexpected error: " + e.getMessage(), e);
+            return false;
         }
+
     }
 }

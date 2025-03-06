@@ -21,6 +21,8 @@ import java.time.Duration;
 @EnableCaching
 public class RedisConfig {
 
+
+    //consider redis and add your password
     @Bean
     public LettuceConnectionFactory redisConnectionFactory() {
         LettuceConnectionFactory factory = new LettuceConnectionFactory("localhost", 6380);
